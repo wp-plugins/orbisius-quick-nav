@@ -3,7 +3,7 @@
 Plugin Name: Orbisius Quick Nav
 Plugin URI: http://club.orbisius.com/products/wordpress-plugins/orbisius-quick-nav/?utm_source=orbisius-quick-nav&utm_medium=plugin-header&utm_campaign=product
 Description: This plugin allows you to quickly switch between pages, posts, or any other custom post types.
-Version: 1.0.0
+Version: 1.0.1
 Author: Svetoslav Marinov (Slavi)
 Author URI: http://orbisius.com
 */
@@ -90,7 +90,7 @@ function orbisius_quick_nav_gen_dropdown($post) {
 
     if ($post->post_type == 'page') {
         $buff .= wp_dropdown_pages($args); // must be hierachical
-    } else {
+    } elseif ($post->post_type == 'post') {
         $dropdown_options = array();
         $items_raw = orbisius_quick_nav_util::get_items($post->post_type, array( 'post_status' => $statuses) );
 
@@ -99,10 +99,33 @@ function orbisius_quick_nav_gen_dropdown($post) {
                 continue;
             }
             
-            $dropdown_options[$rec['id']] = $rec['title'];
+            $dropdown_options[$rec['id']] = $rec['post_title'];
 
             if ($rec['post_status'] != 'publish') {
                 $dropdown_options[$rec['id']] .=  ' [' . $rec['post_status'] . ']';
+            }
+        }
+
+        $buff .= orbisius_quick_nav_util::html_select($args['name'], $post->ID, $dropdown_options);
+    } else {
+        $limit = 1000;
+        global $wpdb;
+
+        $where = sprintf( "WHERE post_status != 'trash' AND post_type = '%s' ", $wpdb->escape($post->post_type) );
+        $order = 'ORDER BY post_title DESC';
+        
+        $items_raw = $wpdb->get_results("SELECT id, post_title, post_type, post_status FROM {$wpdb->posts} $where $order LIMIT $limit", ARRAY_A);
+        $items_raw = empty($items_raw) ? array() : $items_raw;
+
+        foreach ($items_raw as $rec) {
+            if ($rec['post_status'] == 'auto-draft') {
+                continue;
+            }
+            
+            $dropdown_options[$rec['id']] = $rec['post_title'];
+
+            if ($rec['post_status'] != 'publish') {
+                $dropdown_options[$rec['id']] =  '[' . $rec['post_status'] . '] ' . $dropdown_options[$rec['id']];
             }
         }
 
@@ -207,6 +230,7 @@ class orbisius_quick_nav_util {
         foreach ($posts as $post) {
             $rec['id'] = $post->ID;
             $rec['title'] = $post->post_title;
+            $rec['post_title'] = $post->post_title;
             $rec['post_status'] = $post->post_status;
             $items[$rec['id']] = $rec;
         }

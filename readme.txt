@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: wp,orbisius, plugin, sidebar,widget,widgets,WooCommerce,ecommerce,widgets,quick nav,quicknav,quick-nav,quick page nav,quick post nav
 Requires at least: 3.0.0
 Tested up to: 3.8.1
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 
 This plugin allows you to quickly switch between pages, posts, or any other custom post types.
@@ -30,7 +30,7 @@ That's it
 = Demo =
 
 How to Switch between WooCommerce Products
-https://www.youtube.com/watch?feature=player_embedded&v=49a2M15AAcc
+http://www.youtube.com/watch?v=49a2M15AAcc
 
 = Author =
 
@@ -60,6 +60,9 @@ n/a
 Just install the plugin and activate it.
 
 == Changelog ==
+
+= 1.0.1 =
+* Loading custom post types differently using an SQL as the other methods may cause crash
 
 = 1.0.0 =
 * Initial release
